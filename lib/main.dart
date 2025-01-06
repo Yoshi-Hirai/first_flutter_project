@@ -54,12 +54,44 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final TextEditingController _nameController =
+      TextEditingController(); // 入力を管理するコントローラー
+  final TextEditingController _mailaddressController = TextEditingController();
+
   int _counter = 0;
+  String _inputName = '';
 
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
+  }
+
+  void _navigateToSecontPage() {
+    if (_nameController.text.isNotEmpty) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SecondPage(
+                name: _nameController.text,
+                mailaddress: _mailaddressController.text),
+          ));
+    } else {
+      // 入力が空の場合のエラーダイアログ
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('error'),
+          content: const Text('Please enter some text'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -80,6 +112,31 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.titleLarge,
             ),
+            const SizedBox(height: 20), // 余白を追加
+            // TextFieldウィジェットを追加
+            TextField(
+                controller: _nameController,
+                onChanged: (text) {
+                  setState(() {
+                    _inputName = text; // 入力値を更新
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Enter Your Name', // フィールドラベル
+                  border: OutlineInputBorder(), // 枠線
+                )),
+            const SizedBox(height: 20), // 余白を追加
+            // 入力値を表示
+            Text('Your Name : $_inputName',
+                style: Theme.of(context).textTheme.bodyMedium),
+            const SizedBox(height: 20), // 余白を追加
+            // TextFieldウィジェットを追加
+            TextField(
+                controller: _mailaddressController,
+                decoration: const InputDecoration(
+                  labelText: 'Enter Your Mail Address', // フィールドラベル
+                  border: OutlineInputBorder(), // 枠線
+                )),
             const SizedBox(height: 20), // 余白を追加
             // ネットワーク画像
             const Text(
@@ -105,13 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 150,
             ),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SecondPage(),
-                    ));
-              },
+              onPressed: _navigateToSecontPage,
               child: const Text("Go To Secont Page"),
             ), // 新しいボタンを追加
           ],
@@ -128,7 +179,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // 新しい画面を定義
 class SecondPage extends StatelessWidget {
-  const SecondPage({super.key});
+  final String name; // 渡されたデータ
+  final String mailaddress;
+
+  const SecondPage({super.key, required this.name, required this.mailaddress});
 
   @override
   Widget build(BuildContext context) {
@@ -136,10 +190,26 @@ class SecondPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Second Page"),
       ),
-      body: const Center(
-        child: Text(
-          "This is the Second Page!",
-          style: TextStyle(fontSize: 24),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Your Input",
+              style: TextStyle(fontSize: 24),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Name: $name',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Mail: $mailaddress',
+              style: const TextStyle(fontSize: 20),
+            ),
+          ],
         ),
       ),
     );
