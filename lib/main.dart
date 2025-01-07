@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'button.dart';
 
 void main() {
   runApp(const MyApp());
@@ -102,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title:
             Text(widget.title, style: Theme.of(context).textTheme.titleLarge),
       ),
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -165,6 +166,21 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: _navigateToSecontPage,
               child: const Text("Go To Secont Page"),
             ), // 新しいボタンを追加
+            ImageNetworkButton(
+              imageUrl:
+                  'https://frame-illust.com/fi/wp-content/uploads/2019/01/flag-hong-kong-400x400.png',
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('image network button pressed!'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              },
+            ), // 新しい画像ボタンを追加
+            ImageAssetButton(
+                imageAsset: 'assets/images/bandainamco.png',
+                onTap: _navigateToSecontPage), // 新しい画像ボタンを追加
           ],
         ),
       ),
