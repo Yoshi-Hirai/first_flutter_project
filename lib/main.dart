@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import 'button.dart';
 import 'tekken_main.dart';
 import 'talesarise/main.dart';
@@ -63,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int _counter = 0;
   String _inputName = '';
+  String _response = "Press the button to fetch data.";
 
   void _incrementCounter() {
     setState(() {
@@ -97,6 +101,30 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // サーバーからデータを取得する関数
+  Future<void> fetchData() async {
+    final url = Uri.parse(
+        'https://rclq34cwwwqkapnkvyefjsjztm0ymsfb.lambda-url.us-east-1.on.aws/');
+    try {
+      final response = await http.get(url); // GETリクエストを送信
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          _response = "data: ${data['racedata']}\nBody: ${data['body']}";
+        });
+      } else {
+        setState(() {
+          _response = "Failed to load data: ${response.statusCode}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _response = "Error occurred: $e";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,6 +143,12 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.titleLarge,
             ),
+            const SizedBox(height: 20), // 余白を追加
+            // WEBリクエストするボタンを追加
+            ElevatedButton(
+              onPressed: fetchData,
+              child: const Text("Request"),
+            ), // 新しいボタンを追加
             const SizedBox(height: 20), // 余白を追加
             // TextFieldウィジェットを追加
             TextField(
@@ -141,12 +175,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   border: OutlineInputBorder(), // 枠線
                 )),
             const SizedBox(height: 20), // 余白を追加
-            // ネットワーク画像
-            const Text(
-              'Here is an Network Image:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              _response,
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.normal),
             ),
             const SizedBox(height: 10), // 余白を追加
+            // ネットワーク画像
             Image.network(
               'https://www.bandainamco.co.jp/assets/movie/thumb-top-cm-movie.jpg',
               width: 150,
