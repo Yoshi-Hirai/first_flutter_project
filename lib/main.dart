@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'button.dart';
-import 'tekken_main.dart';
-import 'talesarise/main.dart';
+import 'package:first_flutter_project/button.dart';
+import 'package:first_flutter_project/tekken_main.dart';
+import 'package:first_flutter_project/talesarise/main.dart';
 
 void main() {
   runApp(const MyApp());
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => SecondPage(
+            builder: (context) => MainPage(
                 name: _nameController.text,
                 mailaddress: _mailaddressController.text),
           ));
