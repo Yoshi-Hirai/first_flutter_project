@@ -103,8 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // サーバーからデータを取得する関数
   Future<void> fetchData() async {
-    final url = Uri.parse(
-        'https://rclq34cwwwqkapnkvyefjsjztm0ymsfb.lambda-url.us-east-1.on.aws/');
+    final url = Uri.parse('http://localhost:8080/timeline');
     try {
       final response = await http.get(url); // GETリクエストを送信
 
