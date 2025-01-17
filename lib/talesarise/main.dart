@@ -19,6 +19,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   List<String> _postData = []; // 空のリストを初期化
   bool _isLoading = false;
+  String _response = '';
   final TextEditingController _controllerPost = TextEditingController();
 
   @override
@@ -33,6 +34,7 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
+  // ページ遷移時にtimelineを取得するリクエストを実行
   Future<void> _fetchTimeline() async {
     final url = Uri.parse('http://localhost:8080/timeline');
     setState(() {
@@ -42,11 +44,20 @@ class _MainPageState extends State<MainPage> {
     try {
       final response = await http.get(url); // GETリクエストを送信
       if (response.statusCode == 200) {
+        //debugPrint(response.body);
+        //debugPrint(response.body.isEmpty.toString());
         final data = json.decode(response.body);
-        setState(() {
-          _postData.add("Name: ${data['accountname']}\nText: ${data['text']}");
-          _isLoading = false;
-        });
+        if (data == null || data.isEmpty) {
+          setState(() {
+            _isLoading = false;
+          });
+        } else {
+          setState(() {
+            _postData
+                .add("Name: ${data['accountname']}\nText: ${data['text']}");
+            _isLoading = false;
+          });
+        }
       } else {
         setState(() {
           _postData.add("Failed to load data: ${response.statusCode}");
@@ -57,6 +68,47 @@ class _MainPageState extends State<MainPage> {
       setState(() {
         _postData.add("Error occurred: $e");
         _isLoading = false;
+      });
+    }
+  }
+
+  // タイムラインに投稿するリクエスト
+  Future<void> _PostedTimeline(String text) async {
+    const String url = 'http://localhost:8080/timeline'; // APIエンドポイント
+    final Map<String, dynamic> postData = {
+      'action': 'Posted',
+      'boardId': 1,
+      'accountId': 24,
+      'text': 'おはようございます。',
+      'captionUrl': '',
+    };
+    postData['text'] = text;
+
+    try {
+      // POSTリクエストを送信
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(postData), // データをJSON形式に変換
+      );
+
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        setState(() {
+          _response = "Post successful: ${response.body}";
+          _postData
+              .add("Name: ${data[0]['accountname']}\nText: ${data[0]['text']}");
+        });
+      } else {
+        setState(() {
+          _response = "Failed with status code: ${response.statusCode}";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _response = "Error: $e";
       });
     }
   }
@@ -73,7 +125,7 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Name: ${widget.name} numPost: $_postData.length',
+              'Name: ${widget.name} \nresponse: $_response',
               style: const TextStyle(fontSize: 12),
             ),
 /*
@@ -135,12 +187,13 @@ class _MainPageState extends State<MainPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
+              onPressed: () => _PostedTimeline(_controllerPost.text),
+/*
               onPressed: () {
                 setState(() {
                   _postData.add(_controllerPost.text);
                 });
                 // 入力内容をダイアログで表示
-                /*
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -154,8 +207,8 @@ class _MainPageState extends State<MainPage> {
                     ],
                   ),
                 );
-                */
               },
+*/
               child: const Text('Submit'),
             ),
           ],
