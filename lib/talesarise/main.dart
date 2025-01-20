@@ -7,10 +7,11 @@ import 'package:first_flutter_project/button.dart';
 
 // 新しい画面を定義
 class MainPage extends StatefulWidget {
-  final String name; // 渡されたデータ
-  final String mailaddress;
+  final String accountid; // 渡されたデータ
+  final String accountname;
 
-  const MainPage({super.key, required this.name, required this.mailaddress});
+  const MainPage(
+      {super.key, required this.accountid, required this.accountname});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -82,6 +83,7 @@ class _MainPageState extends State<MainPage> {
       'text': 'おはようございます。',
       'captionUrl': '',
     };
+    postData['accountId'] = widget.accountid;
     postData['text'] = text;
 
     try {
@@ -125,7 +127,7 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Name: ${widget.name} \nresponse: $_response',
+              'accountId: ${widget.accountid} accountName: ${widget.accountname} \nresponse: $_response',
               style: const TextStyle(fontSize: 12),
             ),
 /*

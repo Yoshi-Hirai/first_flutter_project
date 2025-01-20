@@ -60,12 +60,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final TextEditingController _nameController =
+  final TextEditingController _accountIdController =
       TextEditingController(); // 入力を管理するコントローラー
-  final TextEditingController _mailaddressController = TextEditingController();
+  final TextEditingController _accountNameController = TextEditingController();
 
   int _counter = 0;
-  String _inputName = '';
+  String _inputAccountId = '';
   String _response = "Press the button to fetch data.";
 
   void _incrementCounter() {
@@ -75,13 +75,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _navigateToSecontPage() {
-    if (_nameController.text.isNotEmpty) {
+    if (_accountIdController.text.isNotEmpty) {
       Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => MainPage(
-                name: _nameController.text,
-                mailaddress: _mailaddressController.text),
+                accountid: _accountIdController.text,
+                accountname: _accountNameController.text),
           ));
     } else {
       // 入力が空の場合のエラーダイアログ
@@ -151,26 +151,26 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(height: 20), // 余白を追加
             // TextFieldウィジェットを追加
             TextField(
-                controller: _nameController,
+                controller: _accountIdController,
                 onChanged: (text) {
                   setState(() {
-                    _inputName = text; // 入力値を更新
+                    _inputAccountId = text; // 入力値を更新
                   });
                 },
                 decoration: const InputDecoration(
-                  labelText: 'Enter Your Name', // フィールドラベル
+                  labelText: 'Enter Your AccountId', // フィールドラベル
                   border: OutlineInputBorder(), // 枠線
                 )),
             const SizedBox(height: 20), // 余白を追加
             // 入力値を表示
-            Text('Your Name : $_inputName',
+            Text('Your Name : $_inputAccountId',
                 style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 20), // 余白を追加
             // TextFieldウィジェットを追加
             TextField(
-                controller: _mailaddressController,
+                controller: _accountNameController,
                 decoration: const InputDecoration(
-                  labelText: 'Enter Your Mail Address', // フィールドラベル
+                  labelText: 'Enter Your Name', // フィールドラベル
                   border: OutlineInputBorder(), // 枠線
                 )),
             const SizedBox(height: 20), // 余白を追加
