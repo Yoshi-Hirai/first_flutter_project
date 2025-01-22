@@ -66,7 +66,9 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    _fetchTimeline(); // 初期データ取得
+    // 初期データ取得
+    //_fetchTimeline();
+    _PostedTimeline("acquisition", "");
   }
 
   @override
@@ -75,7 +77,8 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
-  // ページ遷移時にtimelineを取得するリクエストを実行
+  // 使用しない
+  // ページ遷移時にtimelineを取得するリクエストを実行(Get)
   Future<void> _fetchTimeline() async {
     final url = Uri.parse('http://localhost:8080/timeline');
     setState(() {
@@ -110,7 +113,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   // タイムラインに投稿するリクエスト
-  Future<void> _PostedTimeline(String text) async {
+  Future<void> _PostedTimeline(String act, String text) async {
     const String url = 'http://localhost:8080/timeline'; // APIエンドポイント
     final Map<String, dynamic> postData = {
       'action': 'Posted',
@@ -119,6 +122,7 @@ class _MainPageState extends State<MainPage> {
       'text': 'おはようございます。',
       'captionUrl': '',
     };
+    postData['action'] = act;
     postData['accountId'] = widget.accountid;
     postData['text'] = text;
 
@@ -235,7 +239,7 @@ class _MainPageState extends State<MainPage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => _PostedTimeline(_controllerPost.text),
+              onPressed: () => _PostedTimeline("post", _controllerPost.text),
 /*
               onPressed: () {
                 setState(() {
