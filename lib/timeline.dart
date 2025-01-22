@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:first_flutter_project/button.dart';
 
 class TimelinePostWidget extends StatelessWidget {
-  final String message; // テキストタイトル
+  final String caption; // テキストキャプション
+  final String message; // テキストメッセージ
   final List<ImageAssetButton> buttons; // ボタンリスト
 
   const TimelinePostWidget({
     super.key,
+    required this.caption,
     required this.message,
     required this.buttons,
   });
@@ -18,8 +20,13 @@ class TimelinePostWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
+          caption,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+        ),
+        const SizedBox(height: 20),
+        Text(
           message,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
         ),
         const SizedBox(height: 20),
         Row(
