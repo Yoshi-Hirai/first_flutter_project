@@ -6,6 +6,7 @@ import 'package:first_flutter_project/timeline.dart';
 import 'package:first_flutter_project/button.dart';
 
 class PostInformation {
+  final int messageUniqueId;
   final int boardId;
   final int accountId;
   final String accountName;
@@ -13,8 +14,8 @@ class PostInformation {
   final String text;
   final String captionUrl;
 
-  PostInformation(this.boardId, this.accountId, this.accountName, this.postTime,
-      this.text, this.captionUrl);
+  PostInformation(this.messageUniqueId, this.boardId, this.accountId,
+      this.accountName, this.postTime, this.text, this.captionUrl);
 
 /*
   @override
@@ -24,6 +25,7 @@ class PostInformation {
   // JSONから構造体を生成
   factory PostInformation.fromJson(Map<String, dynamic> json) {
     return PostInformation(
+        json['messageuniqueid'],
         json['boardid'],
         json['accountid'],
         json['accountname'],
@@ -35,6 +37,7 @@ class PostInformation {
   // UserをJSONに変換
   Map<String, dynamic> toJson() {
     return {
+      'messageuniqueid': messageUniqueId,
       'boardid': boardId,
       'accountid': accountId,
       'accountname': accountName,
@@ -194,7 +197,9 @@ class _MainPageState extends State<MainPage> {
                   itemBuilder: (context, index) {
                     final postData = _postData[_postData.length - index - 1];
                     return TimelinePostWidget(
-                      caption: postData.postTime,
+                      caption: postData.messageUniqueId.toString() +
+                          " " +
+                          postData.postTime,
                       message: postData.text,
                       buttons: [
                         ImageAssetButton(
