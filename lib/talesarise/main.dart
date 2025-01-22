@@ -5,6 +5,46 @@ import 'dart:convert';
 import 'package:first_flutter_project/timeline.dart';
 import 'package:first_flutter_project/button.dart';
 
+class PostInformation {
+  final int boardId;
+  final int accountId;
+  final String accountName;
+  final String postTime;
+  final String text;
+  final String captionUrl;
+
+  PostInformation(this.boardId, this.accountId, this.accountName, this.postTime,
+      this.text, this.captionUrl);
+
+/*
+  @override
+  String toString() => 'User(name: $name, age: $age)';
+*/
+
+  // JSONから構造体を生成
+  factory PostInformation.fromJson(Map<String, dynamic> json) {
+    return PostInformation(
+        json['boardid'],
+        json['accountid'],
+        json['accountname'],
+        json['posttime'],
+        json['text'],
+        json['captionurl']);
+  }
+
+  // UserをJSONに変換
+  Map<String, dynamic> toJson() {
+    return {
+      'boardid': boardId,
+      'accountid': accountId,
+      'accountname': accountName,
+      'posttime': postTime,
+      'text': text,
+      'captionurl': captionUrl
+    };
+  }
+}
+
 // 新しい画面を定義
 class MainPage extends StatefulWidget {
   final String accountid; // 渡されたデータ
@@ -18,7 +58,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<String> _postData = []; // 空のリストを初期化
+  List<PostInformation> _postData = []; // 空のリストを初期化
   bool _isLoading = false;
   String _response = '';
   final TextEditingController _controllerPost = TextEditingController();
@@ -45,8 +85,6 @@ class _MainPageState extends State<MainPage> {
     try {
       final response = await http.get(url); // GETリクエストを送信
       if (response.statusCode == 200) {
-        //debugPrint(response.body);
-        //debugPrint(response.body.isEmpty.toString());
         final data = json.decode(response.body);
         if (data == null || data.isEmpty) {
           setState(() {
@@ -54,20 +92,18 @@ class _MainPageState extends State<MainPage> {
           });
         } else {
           setState(() {
-            _postData
-                .add("Name: ${data['accountname']}\nText: ${data['text']}");
+            PostInformation single = PostInformation.fromJson(data);
+            _postData.add(single);
             _isLoading = false;
           });
         }
       } else {
         setState(() {
-          _postData.add("Failed to load data: ${response.statusCode}");
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _postData.add("Error occurred: $e");
         _isLoading = false;
       });
     }
@@ -100,8 +136,17 @@ class _MainPageState extends State<MainPage> {
         final data = json.decode(response.body);
         setState(() {
           _response = "Post successful: ${response.body}";
-          _postData
-              .add("Name: ${data[0]['accountname']}\nText: ${data[0]['text']}");
+          if (data is List) {
+            // List<dynamic>を構造体（Userオブジェクト）に変換
+            List<PostInformation> plural =
+                data.map((item) => PostInformation.fromJson(item)).toList();
+            _postData.add(plural[0]);
+            debugPrint(plural.length.toString());
+          } else if (data is Map) {
+            PostInformation singular =
+                PostInformation.fromJson(Map<String, dynamic>.from(data));
+            _postData.add(singular);
+          }
         });
       } else {
         setState(() {
@@ -145,7 +190,8 @@ class _MainPageState extends State<MainPage> {
                   itemBuilder: (context, index) {
                     final postData = _postData[_postData.length - index - 1];
                     return TimelinePostWidget(
-                      message: postData,
+                      caption: postData.postTime,
+                      message: postData.text,
                       buttons: [
                         ImageAssetButton(
                           imageAsset: 'assets/images/good.png',
@@ -193,7 +239,7 @@ class _MainPageState extends State<MainPage> {
 /*
               onPressed: () {
                 setState(() {
-                  _postData.add(_controllerPost.text);
+                  _tempPostData.add(_controllerPost.text);
                 });
                 // 入力内容をダイアログで表示
                 showDialog(
